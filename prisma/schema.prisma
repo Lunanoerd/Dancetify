@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model DanceClass {
+  id           String   @id @default(cuid())
+  studioName   String
+  studioWebsite String
+  bookingUrl   String
+  className    String
+  instructor   String
+  genre        String
+  level        String   @default("All levels")
+  dayOfWeek    Int      // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+  classDate    String?  // "2026-04-07" — set for one-off dated events (e.g. Ventures), null for recurring
+  startTime    String   // "18:00"
+  endTime      String   // "19:30"
+  location     String?
+  price        String?
+  notes        String?
+  lastScraped  DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
