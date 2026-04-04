@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "seed": "npx tsx prisma/seed.ts",
-    "scrape": "npx tsx scripts/scrape.ts"
+    "scrape": "npx tsx scripts/scrape.ts",
+    "postinstall": "npx playwright install chromium || true"
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
