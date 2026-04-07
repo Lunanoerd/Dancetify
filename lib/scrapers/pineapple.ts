@@ -80,8 +80,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const price = priceMatch ? `£${priceMatch[1]}` : null
         const instructorFromName = priceMatch ? priceMatch[2].trim() : ''
 
-        const fullClassName = genrePrefix ? `${genrePrefix} - ${className}` : className
-        const rawName = fullClassName
+        const rawName = className
 
         // Instructor from staff element, fall back to the name-embedded instructor
         const staffEl = session.querySelector('.bw-session__staff')
