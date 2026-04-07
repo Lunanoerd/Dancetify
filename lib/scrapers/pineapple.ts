@@ -70,9 +70,9 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         // Get raw text excluding the hidden span
         const nameRaw = nameEl?.textContent?.trim().replace(/\s+/g, ' ') || ''
         // Strip hidden span text from front (it appears in textContent even if display:none)
-        const nameWithoutPrefix = nameRaw.startsWith(genrePrefix)
+        const nameWithoutPrefix = (nameRaw.startsWith(genrePrefix)
           ? nameRaw.slice(genrePrefix.length).trim()
-          : nameRaw
+          : nameRaw).replace(/^[-\s]+/, '').trim()
 
         // Parse: "Commercial Hip Hop (Int) £12 Polly Towers"
         const priceMatch = nameWithoutPrefix.match(/£(\d+)\s*(.*)$/)
