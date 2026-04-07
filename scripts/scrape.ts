@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { runAllScrapers } from '../lib/scrapers'
 
 async function main() {
