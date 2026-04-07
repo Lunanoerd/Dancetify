@@ -37,13 +37,18 @@ export async function runAllScrapers(): Promise<{
       const classes = await fn()
       console.log(`  → ${classes.length} classes found`)
 
+      // Delete all existing records for this studio before inserting fresh data
+      // This prevents stale records (e.g. wrong-day classes) from accumulating
+      await db.danceClass.deleteMany({ where: { studioName: name } })
+
+      const seenIds = new Set<string>()
       for (const cls of classes) {
-        const id = makeId(cls)
-        await db.danceClass.upsert({
-          where: { id },
-          update: { ...cls, lastScraped: new Date() },
-          create: { id, ...cls, lastScraped: new Date() },
-        })
+        let id = makeId(cls)
+        // Handle duplicates within the same scrape batch
+        let suffix = 1
+        while (seenIds.has(id)) { id = `${makeId(cls)}-${suffix++}` }
+        seenIds.add(id)
+        await db.danceClass.create({ data: { id, ...cls, lastScraped: new Date() } })
         added++
       }
     } catch (err) {
