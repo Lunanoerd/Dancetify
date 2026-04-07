@@ -52,6 +52,7 @@ export const STUDIO_LOCATIONS: Record<string, { label: string; mapsUrl: string }
   'The Manor LDN':          { label: 'Finsbury Park', mapsUrl: 'https://maps.app.goo.gl/yiYU5ymnaHcKQxMB9' },
   'Base Dance Studios':     { label: 'Vauxhall',      mapsUrl: 'https://maps.app.goo.gl/pXKtR4Gob9EykC7j6' },
   'Ventures Studio':        { label: 'Vauxhall',      mapsUrl: 'https://maps.app.goo.gl/n1AmQzsXJf9Syw7z9' },
+  'XY Studio':              { label: 'Holborn',        mapsUrl: 'https://maps.app.goo.gl/4huxFNuLY1xjN5oo6' },
 }
 
 export const GENRE_COLORS: Record<Genre, string> = {
