@@ -87,9 +87,18 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
       (captured.establishments || []).map((e: any) => [e.id, e.title])
     )
 
-    return captured.offers
-      .filter((offer: any) => !offer.manager_only)
-      .map((offer: any) => {
+    // Deduplicate — API returns 2 weeks so recurring classes appear twice
+    const seen = new Set<string>()
+    const uniqueOffers = captured.offers.filter((offer: any) => {
+      if (offer.manager_only) return false
+      const key = `${offer.activity_name}-${offer.establishment}-${new Date(offer.date_start).getDay()}-${formatTime(offer.date_start)}`
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+
+    return uniqueOffers
+      .map((offer: any): Omit<DanceClass, 'id' | 'lastScraped'> => {
         const dateStart = new Date(offer.date_start)
         const dayOfWeek = dateStart.getDay() // 0=Sun, 1=Mon, …
 
