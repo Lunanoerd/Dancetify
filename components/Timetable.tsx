@@ -7,7 +7,7 @@ import { ClassCard } from './ClassCard'
 
 interface Props {
   classes: DanceClass[]
-  onClassClick: (cls: DanceClass) => void
+  onClassClick: (cls: DanceClass, specificDate: string) => void
 }
 
 function getMonday(weekOffset = 0): Date {
@@ -30,6 +30,10 @@ function getDateForDay(dayOfWeek: number, weekOffset: number): Date {
 
 function formatDate(d: Date): string {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+}
+
+function formatISODate(d: Date): string {
+  return d.toISOString().slice(0, 10)
 }
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0] // Mon → Sun
@@ -78,9 +82,10 @@ export function Timetable({ classes, onClassClick }: Props) {
                     <p className="text-xs text-gray-400 mt-0.5">{formatDate(date)}</p>
                   </div>
                   <div className="space-y-2">
-                    {dayclasses.map(cls => (
-                      <ClassCard key={`${weekOffset}-${cls.id}`} cls={cls} onClick={onClassClick} />
-                    ))}
+                    {dayclasses.map(cls => {
+                      const specificDate = cls.classDate ?? formatISODate(getDateForDay(cls.dayOfWeek, weekOffset))
+                      return <ClassCard key={`${weekOffset}-${cls.id}`} cls={cls} specificDate={specificDate} onClick={onClassClick} />
+                    })}
                   </div>
                 </div>
               )
@@ -111,7 +116,7 @@ export function Timetable({ classes, onClassClick }: Props) {
 
         {/* Day accordion for selected week */}
         <div className="space-y-3">
-          {DAY_ORDER.map(day => {
+          {DAY_ORDER.filter(d => classes.some(c => c.dayOfWeek === d)).map(day => {
             const key = `${activeWeek}-${day}`
             const date = getDateForDay(day, activeWeek)
             const dayclasses = classes.filter(c => c.dayOfWeek === day).sort((a, b) => a.startTime.localeCompare(b.startTime))
@@ -139,9 +144,10 @@ export function Timetable({ classes, onClassClick }: Props) {
 
                 {isOpen && dayclasses.length > 0 && (
                   <div className="px-3 pb-3 space-y-2">
-                    {dayclasses.map(cls => (
-                      <ClassCard key={`${key}-${cls.id}`} cls={cls} onClick={onClassClick} />
-                    ))}
+                    {dayclasses.map(cls => {
+                      const specificDate = cls.classDate ?? formatISODate(getDateForDay(cls.dayOfWeek, activeWeek))
+                      return <ClassCard key={`${key}-${cls.id}`} cls={cls} specificDate={specificDate} onClick={onClassClick} />
+                    })}
                   </div>
                 )}
 

@@ -2,6 +2,9 @@
  * Playground London (Mindbody widget)
  * Each class row is a MuiGrid-container with 5 children.
  * Row text format: "2:00 PM 90 min CHOREOGRAPHY (INT/ADV) Daley Monte • Main Studio Show Details..."
+ *
+ * Booking URLs: The Mindbody Go widget uses JS-modal booking with no extractable per-class href.
+ * Falls back to the Playground schedule page. Skipped for deep-link fix (same constraint as Manor).
  */
 import { chromium, type Page } from 'playwright'
 import type { DanceClass, Genre, Level } from '@/lib/types'

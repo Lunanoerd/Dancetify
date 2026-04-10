@@ -27,3 +27,42 @@ model DanceClass {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model User {
+  id            String        @id           // Clerk userId
+  email         String        @unique
+  createdAt     DateTime      @default(now())
+  bookedClasses BookedClass[]
+  manualClasses ManualClass[]
+}
+
+model BookedClass {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  classId    String                          // plain string ref to DanceClass.id (not FK)
+  studioName String
+  className  String
+  instructor String
+  genre      String
+  startTime  String
+  endTime    String
+  classDate  String                          // "YYYY-MM-DD" — resolved at booking time
+  bookedAt   DateTime @default(now())
+  attended   String   @default("pending")   // "pending" | "yes" | "no"
+  emailSent  Boolean  @default(false)
+  emailToken String   @unique @default(cuid())
+}
+
+model ManualClass {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  studioName String
+  genre      String
+  instructor String
+  classDate  String                          // "YYYY-MM-DD"
+  startTime  String?
+  endTime    String?
+  createdAt  DateTime @default(now())
+}

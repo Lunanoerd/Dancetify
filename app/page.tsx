@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { FilterBar } from '@/components/FilterBar'
 import { Timetable } from '@/components/Timetable'
 import { ClassModal } from '@/components/ClassModal'
+import UserButton from '@/components/UserButton'
 import type { DanceClass, Genre, Level } from '@/lib/types'
 
 type TimeOfDay = 'morning' | 'afternoon' | 'evening'
@@ -31,7 +32,7 @@ export default function Home() {
   const [classes, setClasses] = useState<DanceClass[]>([])
   const [studios, setStudios] = useState<string[]>([])
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS)
-  const [selected, setSelected] = useState<DanceClass | null>(null)
+  const [selected, setSelected] = useState<{ cls: DanceClass; specificDate: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchClasses = useCallback(async (f: Filters) => {
@@ -79,9 +80,12 @@ export default function Home() {
             <img src="/logo-cropped.png" alt="Dancetify" className="h-8 w-auto" />
             <p className="text-xs text-gray-400 mt-2">London dance classes, all in one place</p>
           </div>
-          <span className="text-xs text-gray-400">
-            {classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay)).length} classes
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-gray-400">
+              {classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay)).length} classes
+            </span>
+            <UserButton />
+          </div>
         </div>
       </header>
 
@@ -99,13 +103,19 @@ export default function Home() {
         ) : (
           <Timetable
             classes={classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay))}
-            onClassClick={setSelected}
+            onClassClick={(cls, specificDate) => setSelected({ cls, specificDate })}
           />
         )}
       </div>
 
+      {/* Footer */}
+      <footer className="text-center py-6 text-xs text-gray-400 space-x-4">
+        <a href="/privacy" className="underline hover:text-gray-600">Privacy Policy</a>
+        <a href="/contact" className="underline hover:text-gray-600">Contact Us</a>
+      </footer>
+
       {/* Class detail modal */}
-      <ClassModal cls={selected} onClose={() => setSelected(null)} />
+      <ClassModal cls={selected?.cls ?? null} specificDate={selected?.specificDate ?? ''} onClose={() => setSelected(null)} />
     </main>
   )
 }

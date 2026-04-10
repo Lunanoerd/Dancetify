@@ -7,6 +7,9 @@
  *   .bw-widget__day → one per day, contains .bw-widget__date (human date) + .bw-session elements
  *   .bw-session      → data-bw-widget-day="5" (0=Sun…6=Sat), data-bw-widget-mbo-class-name
  *   hc_starttime / hc_endtime → <time datetime="2026-04-03T16:25">
+ *
+ * Booking URLs: constructed from Mindbody studioid (479928) + data-bw-widget-mbo-class-id per session.
+ * Sessions use JS-modal booking (no <a> href), so we build the direct Mindbody classic booking URL.
  */
 import { chromium } from 'playwright'
 import type { DanceClass, Genre, Level } from '@/lib/types'
@@ -15,6 +18,12 @@ import { guessGenre, guessLevel } from './utils'
 const STUDIO_NAME = 'Pineapple Dance Studios'
 const STUDIO_WEBSITE = 'https://www.pineapple.uk.com'
 const TIMETABLE_URL = 'https://www.pineapple.uk.com/pages/dance-classes-for-adults-at-pineapple-dance-studios'
+const MB_STUDIO_ID = '479928'
+
+function makeBookingUrl(mboClassId: string): string {
+  if (!mboClassId) return TIMETABLE_URL
+  return `https://clients.mindbodyonline.com/classic/ws?studioid=${MB_STUDIO_ID}&stype=-7&classId=${mboClassId}`
+}
 
 export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]> {
   const browser = await chromium.launch()
@@ -40,7 +49,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         dayOfWeek: number
         startTime: string
         endTime: string
-        bookingUrl: string
+        mboClassId: string
         level: string
         location: string
       }> = []
@@ -77,7 +86,6 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         // Parse: "Commercial Hip Hop (Int) £12 Polly Towers"
         const priceMatch = nameWithoutPrefix.match(/£(\d+)\s*(.*)$/)
         const className = priceMatch ? nameWithoutPrefix.slice(0, nameWithoutPrefix.indexOf('£')).trim() : nameWithoutPrefix
-        const price = priceMatch ? `£${priceMatch[1]}` : null
         const instructorFromName = priceMatch ? priceMatch[2].trim() : ''
 
         const rawName = className
@@ -88,9 +96,8 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const isSubstitute = staffText.toLowerCase().includes('substitute')
         const instructor = isSubstitute ? instructorFromName : (staffText || instructorFromName)
 
-        // Booking link
-        const link = session.querySelector('a') as HTMLAnchorElement | null
-        const bookingUrl = link?.href || 'https://www.pineapple.uk.com/pages/dance-classes-for-adults-at-pineapple-dance-studios'
+        // Mindbody class ID for direct booking URL construction
+        const mboClassId = session.getAttribute('data-bw-widget-mbo-class-id') || ''
 
         // Location / room
         const locationEl = session.querySelector('.bw-session__location, .hc_location')
@@ -105,7 +112,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const level = levelAttr
 
         if (rawName) {
-          results.push({ className: rawName, instructor, dayOfWeek, startTime, endTime, bookingUrl, level, location })
+          results.push({ className: rawName, instructor, dayOfWeek, startTime, endTime, mboClassId, level, location })
         }
       })
 
@@ -117,7 +124,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
     return sessions.map(s => ({
       studioName: STUDIO_NAME,
       studioWebsite: STUDIO_WEBSITE,
-      bookingUrl: s.bookingUrl,
+      bookingUrl: makeBookingUrl(s.mboClassId),
       className: toTitleCase(s.className),
       instructor: s.instructor || 'TBC',
       genre: guessGenre(s.className) as Genre,

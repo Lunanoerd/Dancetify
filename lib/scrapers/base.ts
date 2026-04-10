@@ -3,6 +3,9 @@
  * Intercepts the BSport /book/v1/offer/ API response during page load.
  * This gives us exact date_start timestamps for every class, avoiding
  * the unreliable pixel-position day detection used previously.
+ *
+ * Booking URLs: BSport's booking flow is widget/auth-gated with no public per-class URL.
+ * Falls back to the studio's general booking page (same constraint as Manor/Playground).
  */
 import { chromium } from 'playwright'
 import type { DanceClass, Genre, Level } from '@/lib/types'

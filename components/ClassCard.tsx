@@ -5,16 +5,17 @@ import { GENRE_COLORS, STUDIO_LOCATIONS } from '@/lib/types'
 
 interface Props {
   cls: DanceClass
-  onClick: (cls: DanceClass) => void
+  specificDate: string
+  onClick: (cls: DanceClass, specificDate: string) => void
 }
 
-export function ClassCard({ cls, onClick }: Props) {
+export function ClassCard({ cls, specificDate, onClick }: Props) {
   const color = GENRE_COLORS[cls.genre] ?? '#888'
   const loc = STUDIO_LOCATIONS[cls.studioName]
 
   return (
     <button
-      onClick={() => onClick(cls)}
+      onClick={() => onClick(cls, specificDate)}
       className="w-full text-left rounded-lg p-3 transition-all hover:scale-[1.02] hover:brightness-110 cursor-pointer"
       style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', borderLeft: `3px solid ${color}`, boxShadow: '0 2px 8px rgba(0,0,0,0.07)' }}
     >

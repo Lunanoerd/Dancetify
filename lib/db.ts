@@ -8,7 +8,7 @@ function createPrismaClient() {
   const tursoUrl = process.env.TURSO_DATABASE_URL
   const tursoToken = process.env.TURSO_AUTH_TOKEN
 
-  if (tursoUrl && tursoToken) {
+  if (process.env.NODE_ENV === 'production' && tursoUrl && tursoToken) {
     // Production: use Turso hosted database
     const adapter = new PrismaLibSql({ url: tursoUrl, authToken: tursoToken })
     return new PrismaClient({ adapter })

@@ -3,6 +3,7 @@ import { scrape as scrapeVentures } from '../lib/scrapers/ventures'
 import { scrape as scrapePineapple } from '../lib/scrapers/pineapple'
 import { scrape as scrapeBase } from '../lib/scrapers/base'
 import { scrape as scrapePlayground } from '../lib/scrapers/playground'
+import { scrape as scrapeXY } from '../lib/scrapers/xy'
 
 const scrapers = [
   { name: 'The Manor LDN', fn: scrapeManor },
@@ -10,6 +11,7 @@ const scrapers = [
   { name: 'Pineapple', fn: scrapePineapple },
   { name: 'Base Dance Studios', fn: scrapeBase },
   { name: 'Playground London', fn: scrapePlayground },
+  { name: 'XY Studio', fn: scrapeXY },
 ]
 
 async function main() {
@@ -22,6 +24,7 @@ async function main() {
       console.log(`✅ ${classes.length} classes found`)
       classes.slice(0, 3).forEach(c => {
         console.log(`  - [${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][c.dayOfWeek]}] ${c.startTime} "${c.className}" by ${c.instructor} [${c.genre}] [${c.level}]`)
+        console.log(`    → ${c.bookingUrl}`)
       })
       if (classes.length > 3) console.log(`  ... and ${classes.length - 3} more`)
     } catch (err) {
