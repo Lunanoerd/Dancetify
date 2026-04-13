@@ -49,30 +49,34 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         await page.waitForTimeout(1000)
       }
 
-      // Get all tab elements currently visible/accessible
-      const tabs = await page.evaluate(() => {
-        const els = Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
-        return els.map((el, i) => ({ index: i, text: el.textContent?.trim() || '' })).filter(t => /^(MON|TUE|WED|THU|FRI|SAT|SUN)/i.test(t.text))
+      // Get all tab text values currently in DOM
+      const tabTexts = await page.evaluate(() => {
+        return Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
+          .map(el => el.textContent?.trim() || '')
+          .filter(t => /^(MON|TUE|WED|THU|FRI|SAT|SUN)/i.test(t))
       })
 
-      for (const tab of tabs) {
-        const dayOfWeek = parseDayFromTabText(tab.text)
+      for (const tabText of tabTexts) {
+        const dayOfWeek = parseDayFromTabText(tabText)
         if (dayOfWeek === -1) continue
 
-        // Click tab by re-querying (DOM may have changed)
-        const tabEls = await page.$$('[class*="rounded-lg"][class*="cursor-p"]')
-        if (tabEls[tab.index]) {
-          await tabEls[tab.index].click()
-          // Wait until this tab becomes active (bg-[#8d0073]) before extracting
-          await page.waitForFunction(
-            (idx: number) => {
-              const els = document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]')
-              return els[idx]?.className.includes('bg-[#8d0073]')
-            },
-            tab.index,
-            { timeout: 5000 }
-          ).catch(() => page.waitForTimeout(2500))
-        }
+        // Click by text content — immune to index shifts after scroll
+        await page.evaluate((text: string) => {
+          const el = Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
+            .find(el => el.textContent?.trim() === text) as HTMLElement | undefined
+          el?.click()
+        }, tabText)
+
+        // Wait until this exact tab has the active class
+        await page.waitForFunction(
+          (text: string) => {
+            const el = Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
+              .find(el => el.textContent?.trim() === text)
+            return el?.className.includes('bg-[#8d0073]')
+          },
+          tabText,
+          { timeout: 8000 }
+        ).catch(() => page.waitForTimeout(2500))
 
         // Extract classes for this day
         const classes = await page.evaluate(() => {
