@@ -6,6 +6,7 @@ import { scrape as scrapeBase } from './base'
 import { scrape as scrapeVentures } from './ventures'
 import { scrape as scrapePlayground } from './playground'
 import { scrape as scrapeXY } from './xy'
+import { scrape as scrapeDanceworks } from './danceworks'
 
 type RawClass = Omit<DanceClass, 'id' | 'lastScraped'>
 
@@ -16,6 +17,7 @@ const scrapers: Array<{ name: string; fn: () => Promise<RawClass[]> }> = [
   { name: 'Ventures Studio', fn: scrapeVentures },
   { name: 'Playground London', fn: scrapePlayground },
   { name: 'XY Studio', fn: scrapeXY },
+  { name: 'Danceworks', fn: scrapeDanceworks },
 ]
 
 function makeId(cls: RawClass): string {

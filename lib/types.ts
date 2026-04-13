@@ -53,6 +53,7 @@ export const STUDIO_LOCATIONS: Record<string, { label: string; mapsUrl: string }
   'Base Dance Studios':     { label: 'Vauxhall',      mapsUrl: 'https://maps.app.goo.gl/pXKtR4Gob9EykC7j6' },
   'Ventures Studio':        { label: 'Vauxhall',      mapsUrl: 'https://maps.app.goo.gl/n1AmQzsXJf9Syw7z9' },
   'XY Studio':              { label: 'Holborn',        mapsUrl: 'https://maps.app.goo.gl/4huxFNuLY1xjN5oo6' },
+  'Danceworks':             { label: 'Mayfair',        mapsUrl: 'https://share.google/fqITmSVswoZ3xlYqU' },
 }
 
 export const GENRE_COLORS: Record<Genre, string> = {

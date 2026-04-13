@@ -52,6 +52,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         mboClassId: string
         level: string
         location: string
+        price: string | null
       }> = []
 
       document.querySelectorAll('.bw-session').forEach(session => {
@@ -111,8 +112,9 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const levelAttr = session.getAttribute('data-bw-widget-class-level') || ''
         const level = levelAttr
 
+        const price = priceMatch ? `£${priceMatch[1]}` : null
         if (rawName) {
-          results.push({ className: rawName, instructor, dayOfWeek, startTime, endTime, mboClassId, level, location })
+          results.push({ className: rawName, instructor, dayOfWeek, startTime, endTime, mboClassId, level, location, price })
         }
       })
 
@@ -133,7 +135,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
       startTime: s.startTime,
       endTime: s.endTime,
       location: s.location,
-      price: null,
+      price: s.price,
       notes: null,
     }))
   } catch (err) {

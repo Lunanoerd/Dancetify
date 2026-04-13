@@ -96,7 +96,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         endTime,
         location: '13 Miles Street, London, SW8 1RZ',
         notes: null,
-        price: null,
+        price: '£12',
       }
     })
   } catch (err) {

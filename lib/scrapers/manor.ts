@@ -104,7 +104,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
             endTime,
             location: 'Clifton House, Clifton Terrace, Finsbury Park, London N4 3JP',
             notes: c.extra || null,
-            price: null,
+            price: c.extra.match(/£\s*(\d+(?:\.\d+)?)/)?.[0]?.replace(/\s/, '') ?? null,
           })
         }
       }

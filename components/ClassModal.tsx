@@ -26,6 +26,8 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
     if (!cls) return
     if (!isSignedIn) return
 
+    // Open booking URL immediately (must be synchronous to avoid browser popup block)
+    window.open(cls.bookingUrl, '_blank')
     setBookingState('loading')
     try {
       await fetch('/api/log/book', {
@@ -47,7 +49,6 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
     } catch {
       setBookingState('idle')
     }
-    window.open(cls.bookingUrl, '_blank')
   }
 
   return (
