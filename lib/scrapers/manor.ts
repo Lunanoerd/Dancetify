@@ -11,15 +11,14 @@ const STUDIO_NAME = 'The Manor LDN'
 const STUDIO_WEBSITE = 'https://www.themanorldn.com'
 const TIMETABLE_URL = 'https://www.themanorldn.com/timetable'
 
-const DAY_NAME_MAP: Record<string, number> = {
-  sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6,
-}
-
 function parseDayFromTabText(text: string): number {
-  // Tab text format: "TUE07.04" or "SAT04.04"
-  const match = text.match(/^(MON|TUE|WED|THU|FRI|SAT|SUN)/i)
+  // Tab text format: "TUE07.04" or "SAT04.04" — derive dayOfWeek from the actual date
+  const match = text.match(/(\d{2})\.(\d{2})/)
   if (!match) return -1
-  return DAY_NAME_MAP[match[1].toLowerCase()] ?? -1
+  const day = parseInt(match[1])
+  const month = parseInt(match[2]) - 1  // 0-indexed
+  const year = new Date().getFullYear()
+  return new Date(year, month, day).getDay()  // 0=Sun, 1=Mon, …
 }
 
 export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]> {
@@ -64,7 +63,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const tabEls = await page.$$('[class*="rounded-lg"][class*="cursor-p"]')
         if (tabEls[tab.index]) {
           await tabEls[tab.index].click()
-          await page.waitForTimeout(1500)
+          await page.waitForTimeout(2500)
         }
 
         // Extract classes for this day
