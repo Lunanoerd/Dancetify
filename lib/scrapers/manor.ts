@@ -1,130 +1,85 @@
 /**
  * The Manor LDN scraper
- * Uses date tab navigation (mobile viewport) — each tab shows one day's classes.
- * Clicks through all visible tabs, then scrolls the tab bar right to reveal next week.
+ * Uses the Lemonbar API directly — no browser needed.
+ * Fetches 14 days and deduplicates by class+dayOfWeek+startTime to get the recurring schedule.
  */
-import { chromium } from 'playwright'
 import type { DanceClass, Genre, Level } from '@/lib/types'
-import { guessGenre, guessLevel, normalizeTime } from './utils'
+import { guessGenre, guessLevel } from './utils'
 
 const STUDIO_NAME = 'The Manor LDN'
 const STUDIO_WEBSITE = 'https://www.themanorldn.com'
 const TIMETABLE_URL = 'https://www.themanorldn.com/timetable'
+const API_BASE = 'https://api.lemonbar.uk/api/admin/booking_sessions'
 
-function parseDayFromTabText(text: string): number {
-  // Tab text format: "TUE07.04" or "SAT04.04" — derive dayOfWeek from the actual date
-  const match = text.match(/(\d{2})\.(\d{2})/)
-  if (!match) return -1
-  const day = parseInt(match[1])
-  const month = parseInt(match[2]) - 1  // 0-indexed
-  const year = new Date().getFullYear()
-  return new Date(year, month, day).getDay()  // 0=Sun, 1=Mon, …
+// skill_level_id → Level
+const LEVEL_MAP: Record<number, Level> = {
+  17:  'BEG/INT',
+  19:  'INT/ADV',
+  20:  'ADV/PRO',
+  457: 'INT/ADV',
+  458: 'BEG/INT',
+  459: 'INT/ADV',
+}
+
+function pad(n: number) { return String(n).padStart(2, '0') }
+
+function isoDate(offset: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() + offset)
+  return d.toISOString().slice(0, 10)
 }
 
 export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]> {
-  const browser = await chromium.launch()
-  const page = await browser.newPage()
-  // Mobile viewport to see tab navigation
-  await page.setViewportSize({ width: 390, height: 844 })
+  const allClasses: Omit<DanceClass, 'id' | 'lastScraped'>[] = []
+  const seenKeys = new Set<string>()
 
-  try {
-    await page.goto(TIMETABLE_URL, { waitUntil: 'load', timeout: 45000 })
-    await page.waitForTimeout(4000)
-    await page.waitForSelector('.manor-timetable-box', { timeout: 15000 })
+  // Fetch 14 days to cover a full 2-week recurring schedule
+  for (let offset = 0; offset < 14; offset++) {
+    const date = isoDate(offset)
+    const url = `${API_BASE}?dates=%5B%22${date}%22%5D&location_id=1`
 
-    const allClasses: Omit<DanceClass, 'id' | 'lastScraped'>[] = []
-    const seenKeys = new Set<string>()
+    const res = await fetch(url)
+    if (!res.ok) continue
+    const data = await res.json() as Record<string, any[]>
+    const sessions = data[date] ?? []
 
-    // Scrape 2 weeks: scroll tab bar right in 2 passes
-    for (let pass = 0; pass < 2; pass++) {
-      if (pass === 1) {
-        // Scroll tab bar right to reveal next week's tabs
-        await page.evaluate(() => {
-          const container = Array.from(document.querySelectorAll('*')).find(el => {
-            const s = window.getComputedStyle(el)
-            return (s.overflowX === 'auto' || s.overflowX === 'scroll') && el.classList.contains('flex')
-          }) as HTMLElement | undefined
-          if (container) container.scrollLeft += 600
-        })
-        await page.waitForTimeout(1000)
-      }
+    for (const s of sessions) {
+      if (s.is_hide_from_customer) continue
 
-      // Get all tab text values currently in DOM
-      const tabTexts = await page.evaluate(() => {
-        return Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
-          .map(el => el.textContent?.trim() || '')
-          .filter(t => /^(MON|TUE|WED|THU|FRI|SAT|SUN)/i.test(t))
+      const dayOfWeek = new Date(date).getDay()
+      const h = s.start_time?.hour ?? 0
+      const m = s.start_time?.minutes ?? 0
+      const startTime = `${pad(h)}:${pad(m)}`
+
+      const endDate = new Date(s.end_date)
+      const endTime = `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`
+
+      const className = s.class_name?.trim() || 'Unknown'
+      const instructor = s.instructor_name?.trim() || 'TBC'
+      const price = parseFloat(s.retail_price) > 0 ? `£${parseFloat(s.retail_price).toFixed(0)}` : null
+      const level: Level = LEVEL_MAP[s.skill_level_id] ?? guessLevel(className)
+
+      const key = `${dayOfWeek}-${className}-${startTime}`
+      if (seenKeys.has(key)) continue
+      seenKeys.add(key)
+
+      allClasses.push({
+        studioName: STUDIO_NAME,
+        studioWebsite: STUDIO_WEBSITE,
+        bookingUrl: TIMETABLE_URL,
+        className,
+        instructor,
+        genre: guessGenre(className) as Genre,
+        level,
+        dayOfWeek,
+        startTime,
+        endTime,
+        location: 'Clifton House, Clifton Terrace, Finsbury Park, London N4 3JP',
+        notes: s.class_description?.trim() || null,
+        price,
       })
-
-      for (const tabText of tabTexts) {
-        const dayOfWeek = parseDayFromTabText(tabText)
-        if (dayOfWeek === -1) continue
-
-        // Click by text content — immune to index shifts after scroll
-        await page.evaluate((text: string) => {
-          const el = Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
-            .find(el => el.textContent?.trim() === text) as HTMLElement | undefined
-          el?.click()
-        }, tabText)
-
-        // Wait until this exact tab has the active class
-        await page.waitForFunction(
-          (text: string) => {
-            const el = Array.from(document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]'))
-              .find(el => el.textContent?.trim() === text)
-            return el?.className.includes('bg-[#8d0073]')
-          },
-          tabText,
-          { timeout: 8000 }
-        ).catch(() => page.waitForTimeout(2500))
-
-        // Extract classes for this day
-        const classes = await page.evaluate(() => {
-          const boxes = document.querySelectorAll('.manor-timetable-box')
-          return Array.from(boxes).map(box => {
-            const paragraphs = box.querySelectorAll('p')
-            const className = paragraphs[0]?.textContent?.trim() || ''
-            const startTime = paragraphs[1]?.textContent?.trim() || ''
-            const instructor = paragraphs[2]?.textContent?.trim() || ''
-            const extra = paragraphs[3]?.textContent?.trim() || ''
-            const link = box.querySelector('a') as HTMLAnchorElement | null
-            return { className, startTime, instructor, extra, bookingUrl: link?.href || '' }
-          }).filter(c => c.className)
-        })
-
-        for (const c of classes) {
-          const key = `${dayOfWeek}-${c.className}-${c.startTime}`
-          if (seenKeys.has(key)) continue
-          seenKeys.add(key)
-
-          const start = normalizeTime(c.startTime)
-          const [h, m] = start.split(':').map(Number)
-          const endH = (h + 1) % 24
-          const endTime = `${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`
-
-          allClasses.push({
-            studioName: STUDIO_NAME,
-            studioWebsite: STUDIO_WEBSITE,
-            bookingUrl: c.bookingUrl || TIMETABLE_URL,
-            className: c.className,
-            instructor: c.instructor || 'TBC',
-            genre: guessGenre(c.className + ' ' + c.extra) as Genre,
-            level: guessLevel(c.className + ' ' + c.extra) as Level,
-            dayOfWeek,
-            startTime: start,
-            endTime,
-            location: 'Clifton House, Clifton Terrace, Finsbury Park, London N4 3JP',
-            notes: c.extra || null,
-            price: c.extra.match(/£\s*(\d+(?:\.\d+)?)/)?.[0]?.replace(/\s/, '') ?? null,
-          })
-        }
-      }
     }
-
-    await browser.close()
-    return allClasses
-  } catch (err) {
-    await browser.close()
-    throw err
   }
+
+  return allClasses
 }
