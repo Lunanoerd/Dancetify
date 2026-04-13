@@ -63,7 +63,15 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const tabEls = await page.$$('[class*="rounded-lg"][class*="cursor-p"]')
         if (tabEls[tab.index]) {
           await tabEls[tab.index].click()
-          await page.waitForTimeout(2500)
+          // Wait until this tab becomes active (bg-[#8d0073]) before extracting
+          await page.waitForFunction(
+            (idx: number) => {
+              const els = document.querySelectorAll('[class*="rounded-lg"][class*="cursor-p"]')
+              return els[idx]?.className.includes('bg-[#8d0073]')
+            },
+            tab.index,
+            { timeout: 5000 }
+          ).catch(() => page.waitForTimeout(2500))
         }
 
         // Extract classes for this day
