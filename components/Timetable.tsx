@@ -33,7 +33,10 @@ function formatDate(d: Date): string {
 }
 
 function formatISODate(d: Date): string {
-  return d.toISOString().slice(0, 10)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
 }
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0] // Mon → Sun
