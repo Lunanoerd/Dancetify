@@ -128,6 +128,9 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const endH = (h + 1) % 24
         const endTime = `${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
+        const d = r.date!
+        const classDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
         return {
           studioName: STUDIO_NAME,
           studioWebsite: STUDIO_WEBSITE,
@@ -136,7 +139,8 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
           instructor,
           genre: guessGenre(className) as Genre,
           level: guessLevel(levelHint || className) as Level,
-          dayOfWeek: r.date!.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+          dayOfWeek: d.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+          classDate,
           startTime,
           endTime,
           location: '14 Fulwood Place, London WC1V 6HZ',
