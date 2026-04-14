@@ -68,7 +68,8 @@ export function Timetable({ classes, onClassClick }: Props) {
           {[0, 1].map(weekOffset => (
             activeDays.map(day => {
               const date = getDateForDay(day, weekOffset)
-              const dayclasses = classes.filter(c => c.dayOfWeek === day).sort((a, b) => a.startTime.localeCompare(b.startTime))
+              const dateStr = formatISODate(date)
+              const dayclasses = classes.filter(c => c.dayOfWeek === day && (!c.classDate || c.classDate === dateStr)).sort((a, b) => a.startTime.localeCompare(b.startTime))
               const isFirstDayOfWeek = day === activeDays[0]
               return (
                 <div key={`${weekOffset}-${day}`} style={{ width: '200px', flexShrink: 0 }}>
@@ -119,7 +120,8 @@ export function Timetable({ classes, onClassClick }: Props) {
           {DAY_ORDER.filter(d => classes.some(c => c.dayOfWeek === d)).map(day => {
             const key = `${activeWeek}-${day}`
             const date = getDateForDay(day, activeWeek)
-            const dayclasses = classes.filter(c => c.dayOfWeek === day).sort((a, b) => a.startTime.localeCompare(b.startTime))
+            const dateStr = formatISODate(date)
+            const dayclasses = classes.filter(c => c.dayOfWeek === day && (!c.classDate || c.classDate === dateStr)).sort((a, b) => a.startTime.localeCompare(b.startTime))
             const isOpen = expanded.includes(key)
             const isToday = date.toDateString() === today.toDateString()
 
