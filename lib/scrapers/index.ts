@@ -21,7 +21,8 @@ const scrapers: Array<{ name: string; fn: () => Promise<RawClass[]> }> = [
 ]
 
 function makeId(cls: RawClass): string {
-  return `${cls.studioName}-${cls.className}-${cls.dayOfWeek}-${cls.startTime}`
+  const datePart = cls.classDate ? `-${cls.classDate}` : ''
+  return `${cls.studioName}-${cls.className}-${cls.dayOfWeek}-${cls.startTime}${datePart}`
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')

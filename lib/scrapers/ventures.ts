@@ -29,6 +29,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         title: string
         timeRaw: string
         dayName: string
+        classDate: string   // "YYYY-MM-DD" parsed from data-event
         link: string
       }> = []
 
@@ -59,13 +60,22 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const title = clean.slice(titleStart).trim()
 
         // Bookwhen event URLs: bookwhen.com/ventures-studio#focus={data-event}
+        // data-event format: "ev-xxxxx-20260414190000" — last 14 chars = YYYYMMDDHHmmss
         const eventId = row.getAttribute('data-event') || ''
         const link = eventId
           ? `https://bookwhen.com/ventures-studio#focus=${eventId}`
           : 'https://bookwhen.com/ventures-studio'
 
+        // Parse classDate from eventId: "ev-xxxxx-20260414190000" → "2026-04-14"
+        let classDate = ''
+        const dateMatch = eventId.match(/-(\d{8})\d{6}$/)
+        if (dateMatch) {
+          const d = dateMatch[1]
+          classDate = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`
+        }
+
         if (title && timeRaw) {
-          results.push({ title, timeRaw, dayName: currentDay, link })
+          results.push({ title, timeRaw, dayName: currentDay, classDate, link })
         }
       })
 
@@ -92,6 +102,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         genre: guessGenre(r.title) as Genre,
         level: guessLevel(r.title) as Level,
         dayOfWeek,
+        classDate: r.classDate || null,
         startTime,
         endTime,
         location: '13 Miles Street, London, SW8 1RZ',
