@@ -1,31 +1,33 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { FilterBar } from '@/components/FilterBar'
+import { FilterBar, type Filters } from '@/components/FilterBar'
 import { Timetable } from '@/components/Timetable'
 import { ClassModal } from '@/components/ClassModal'
 import UserButton from '@/components/UserButton'
-import type { DanceClass, Genre, Level } from '@/lib/types'
+import type { DanceClass, Genre } from '@/lib/types'
 
 type TimeOfDay = 'morning' | 'afternoon' | 'evening'
+export type GenreFilter = Genre | 'Choreography'
 
-interface Filters {
-  genre: Genre | ''
-  day: number | null
-  level: Level | ''
-  studio: string
-  timeOfDay: TimeOfDay | ''
-}
-
-const DEFAULT_FILTERS: Filters = { genre: '', day: null, level: '', studio: '', timeOfDay: '' }
+const DEFAULT_FILTERS: Filters = { genres: [], day: null, level: '', studio: '', timeOfDay: '' }
 
 function matchesTimeOfDay(startTime: string, tod: TimeOfDay | ''): boolean {
   if (!tod) return true
   const [h, m] = startTime.split(':').map(Number)
   const mins = h * 60 + (m || 0)
-  if (tod === 'morning') return mins <= 12 * 60        // ≤ 12:00
-  if (tod === 'afternoon') return mins > 12 * 60 && mins <= 17 * 60  // 12:01–17:00
-  return mins > 17 * 60                                 // > 17:00
+  if (tod === 'morning') return mins <= 12 * 60
+  if (tod === 'afternoon') return mins > 12 * 60 && mins <= 17 * 60
+  return mins > 17 * 60
+}
+
+function matchesGenres(cls: DanceClass, genres: GenreFilter[]): boolean {
+  if (genres.length === 0) return true
+  return genres.some(g =>
+    g === 'Choreography'
+      ? cls.className.toLowerCase().includes('choreography')
+      : cls.genre === g
+  )
 }
 
 export default function Home() {
@@ -35,10 +37,10 @@ export default function Home() {
   const [selected, setSelected] = useState<{ cls: DanceClass; specificDate: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // Genre filtering is client-side; day/level/studio go to the API
   const fetchClasses = useCallback(async (f: Filters) => {
     setLoading(true)
     const params = new URLSearchParams()
-    if (f.genre) params.set('genre', f.genre)
     if (f.day !== null) params.set('day', String(f.day))
     if (f.level) params.set('level', f.level)
     if (f.studio) params.set('studio', f.studio)
@@ -66,10 +68,10 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
-    // timeOfDay is client-side only — don't re-fetch for it
+    // genres and timeOfDay are client-side — don't re-fetch for them
     fetchClasses(filters)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters.genre, filters.day, filters.level, filters.studio, fetchClasses])
+  }, [filters.day, filters.level, filters.studio, fetchClasses])
 
   return (
     <main className="min-h-screen">
@@ -82,7 +84,7 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-xs text-gray-400">
-              {classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay)).length} classes
+              {classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay) && matchesGenres(c, filters.genres)).length} classes
             </span>
             <UserButton />
           </div>
@@ -92,7 +94,7 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Filters */}
         <div className="mb-8">
-          <FilterBar filters={filters} studios={studios} onChange={setFilters} />
+          <FilterBar filters={filters} studios={studios} onChange={f => setFilters(f)} />
         </div>
 
         {/* Timetable */}
@@ -102,7 +104,7 @@ export default function Home() {
           </div>
         ) : (
           <Timetable
-            classes={classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay))}
+            classes={classes.filter(c => matchesTimeOfDay(c.startTime, filters.timeOfDay) && matchesGenres(c, filters.genres))}
             onClassClick={(cls, specificDate) => setSelected({ cls, specificDate })}
           />
         )}

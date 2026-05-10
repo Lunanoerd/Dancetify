@@ -128,8 +128,13 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
         const endH = (h + 1) % 24
         const endTime = `${String(endH).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 
-        const d = r.date!
-        const classDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        // Parse date parts directly from event ID to avoid timezone edge cases
+        const eventIdMatch = r.eventId.match(/-(\d{4})(\d{2})(\d{2})\d{6}$/)
+        const classDate = eventIdMatch
+          ? `${eventIdMatch[1]}-${eventIdMatch[2]}-${eventIdMatch[3]}`
+          : (() => { const d = r.date!; return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` })()
+        // Use UTC noon to get day-of-week without timezone drift
+        const dayOfWeek = new Date(classDate + 'T12:00:00Z').getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6
 
         return {
           studioName: STUDIO_NAME,
@@ -139,7 +144,7 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
           instructor,
           genre: guessGenre(className) as Genre,
           level: guessLevel(levelHint || className) as Level,
-          dayOfWeek: d.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+          dayOfWeek,
           classDate,
           startTime,
           endTime,

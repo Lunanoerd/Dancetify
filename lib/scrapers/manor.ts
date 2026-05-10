@@ -46,13 +46,14 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
     for (const s of sessions) {
       if (s.is_hide_from_customer) continue
 
-      const dayOfWeek = new Date(date).getDay()
+      const [y, mo, dy] = date.split('-').map(Number)
+      const dayOfWeek = new Date(y, mo - 1, dy).getDay()  // local time, avoids UTC-midnight timezone shift
       const h = s.start_time?.hour ?? 0
       const m = s.start_time?.minutes ?? 0
       const startTime = `${pad(h)}:${pad(m)}`
 
-      const endDate = new Date(s.end_date)
-      const endTime = `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`
+      const endMins = h * 60 + m + 90
+      const endTime = `${pad(Math.floor(endMins / 60) % 24)}:${pad(endMins % 60)}`
 
       const className = s.class_name?.trim() || 'Unknown'
       const instructor = s.instructor_name?.trim() || 'TBC'

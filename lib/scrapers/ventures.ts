@@ -85,7 +85,10 @@ export async function scrape(): Promise<Omit<DanceClass, 'id' | 'lastScraped'>[]
     await browser.close()
 
     return raw.map(r => {
-      const dayOfWeek = DAY_NAME_MAP[r.dayName.toLowerCase()] ?? 1
+      // Prefer classDate (from event ID) over currentDay header tracking — more reliable
+      const dayOfWeek = r.classDate
+        ? new Date(r.classDate + 'T12:00:00Z').getDay()
+        : (DAY_NAME_MAP[r.dayName.toLowerCase()] ?? 1)
       const startTime = normalizeTime(r.timeRaw)
 
       // Estimate end time +1.5h
