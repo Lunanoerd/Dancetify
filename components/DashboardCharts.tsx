@@ -15,6 +15,22 @@ interface Props {
   genreColors: Record<string, string>
 }
 
+const panel: React.CSSProperties = {
+  background: 'var(--panel)',
+  border: '1px solid var(--line)',
+  borderRadius: '20px',
+  padding: '16px',
+}
+
+const sectionH: React.CSSProperties = {
+  fontWeight: 800,
+  fontSize: '11px',
+  color: 'var(--muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '.6px',
+  marginBottom: '12px',
+}
+
 export function DashboardCharts({ weekCounts, genreCounts, studioCounts, wrappedStats, genreColors }: Props) {
   const [showManual, setShowManual] = useState(false)
   const [showWrapped, setShowWrapped] = useState(false)
@@ -22,56 +38,75 @@ export function DashboardCharts({ weekCounts, genreCounts, studioCounts, wrapped
   return (
     <>
       {/* Weekly chart */}
-      <div
-        className="rounded-2xl p-5"
-        style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.7)' }}
-      >
-        <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Classes per week (last 2 weeks)</h2>
+      <div style={{ ...panel, marginBottom: '12px' }}>
+        <h3 style={sectionH}>Classes per week (last 2 weeks)</h3>
         <WeeklyChart weekCounts={weekCounts} />
       </div>
 
-      {/* Genre + studio charts */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <div
-          className="rounded-2xl p-5"
-          style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.7)' }}
-        >
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">By genre</h2>
+      {/* Genre + studio */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+        <div style={panel}>
+          <h3 style={sectionH}>By genre</h3>
           <GenreDonut genreCounts={genreCounts} />
         </div>
-        <div
-          className="rounded-2xl p-5"
-          style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.7)' }}
-        >
-          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">By studio</h2>
+        <div style={panel}>
+          <h3 style={sectionH}>By studio</h3>
           <StudioBar studioCounts={studioCounts} />
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 flex-wrap">
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '4px' }}>
         <button
           onClick={() => setShowManual(true)}
-          className="px-5 py-2.5 rounded-full text-sm font-semibold transition-colors"
-          style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.7)', color: '#374151' }}
+          style={{
+            border: '1px solid var(--line)',
+            background: 'var(--panel2)',
+            color: 'var(--ink)',
+            fontFamily: 'inherit',
+            fontWeight: 800,
+            fontSize: '13px',
+            padding: '10px 18px',
+            borderRadius: '999px',
+            cursor: 'pointer',
+          }}
         >
           + Add manual class
         </button>
+
         {wrappedStats.totalHours >= 10 ? (
           <button
             onClick={() => setShowWrapped(true)}
-            className="px-5 py-2.5 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#CE93D8' }}
+            style={{
+              border: 'none',
+              background: 'linear-gradient(120deg, var(--accent), #9B6DFF)',
+              color: '#fff',
+              fontFamily: 'inherit',
+              fontWeight: 800,
+              fontSize: '13px',
+              padding: '10px 18px',
+              borderRadius: '999px',
+              cursor: 'pointer',
+            }}
           >
             Generate my Wrapped ✨
           </button>
         ) : (
           <div
-            className="px-5 py-2.5 rounded-full text-sm font-semibold text-gray-400 cursor-not-allowed"
-            style={{ backgroundColor: 'rgba(255,255,255,0.4)', border: '1.5px solid rgba(255,255,255,0.6)' }}
-            title={`You need ${(8 - wrappedStats.totalHours).toFixed(1)} more hours of dancing to unlock Wrapped`}
+            style={{
+              border: '1px solid var(--line)',
+              background: 'var(--panel)',
+              color: 'var(--muted)',
+              fontFamily: 'inherit',
+              fontWeight: 700,
+              fontSize: '12px',
+              padding: '10px 18px',
+              borderRadius: '999px',
+              cursor: 'not-allowed',
+            }}
+            title={`You need ${(10 - wrappedStats.totalHours).toFixed(1)} more hours to unlock Wrapped`}
           >
-            Wrapped unlocks at 10h danced — {wrappedStats.totalHours}h so far
+            Wrapped unlocks at 10h — {wrappedStats.totalHours}h so far
           </div>
         )}
       </div>

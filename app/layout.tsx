@@ -1,10 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
+import { Nunito, Unbounded } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { TabBar } from "@/components/TabBar";
 import "./globals.css";
 
-const nunito = Nunito({ subsets: ["latin"], variable: "--font-nunito", weight: ["400", "600", "700", "800"] });
+const nunito = Nunito({
+  subsets: ["latin"],
+  variable: "--font-nunito",
+  weight: ["400", "600", "700", "800"],
+});
+
+const unbounded = Unbounded({
+  subsets: ["latin"],
+  variable: "--font-unbounded",
+  weight: ["400", "500", "600", "700"],
+});
 
 export const metadata: Metadata = {
   title: "Dancetify — London Dance Classes",
@@ -19,9 +30,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${nunito.variable} h-full antialiased`}>
+      <html lang="en" className={`${nunito.variable} ${unbounded.variable} h-full antialiased`}>
         <body className="min-h-full">
           {children}
+          <TabBar />
           <Analytics />
         </body>
       </html>

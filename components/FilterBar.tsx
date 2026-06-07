@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { GENRES, DAYS, LEVELS, GENRE_COLORS, type Genre, type Level } from '@/lib/types'
-import type { GenreFilter } from '@/app/page'
+type GenreFilter = import('@/lib/types').Genre | 'Choreography'
 
 type TimeOfDay = 'morning' | 'afternoon' | 'evening'
 

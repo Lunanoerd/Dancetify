@@ -57,13 +57,13 @@ export const STUDIO_LOCATIONS: Record<string, { label: string; mapsUrl: string }
 }
 
 export const GENRE_COLORS: Record<Genre, string> = {
-  'Hip-hop/Street':        '#FFAB91',  // pastel orange
-  'K-pop':                 '#F48FB1',  // pastel pink
-  'Jazz Funk/Commercial':  '#FFE082',  // pastel yellow
-  'Jazz/Musical Theatre':  '#80DEEA',  // pastel cyan
-  'Afro':                  '#A5D6A7',  // pastel green
-  'Ballet/Contemporary':   '#CE93D8',  // lilac/pastel purple
-  'Heels':                 '#EF9A9A',  // pastel rose
-  'Latin/Salsa/Reggaeton': '#FFCC80',  // pastel amber
-  'Other':                 '#B0BEC5',  // pastel grey-blue
+  'Hip-hop/Street':        '#FF6B35',  // vivid orange
+  'Ballet/Contemporary':   '#9B6DFF',  // purple
+  'K-pop':                 '#FF5FA2',  // hot pink
+  'Jazz Funk/Commercial':  '#ED8636',  // amber
+  'Jazz/Musical Theatre':  '#1FAFCF',  // cyan
+  'Heels':                 '#ED4889',  // rose pink (accent)
+  'Afro':                  '#1FAE84',  // green
+  'Latin/Salsa/Reggaeton': '#F7B731',  // gold
+  'Other':                 '#8B8BB5',  // muted purple
 }

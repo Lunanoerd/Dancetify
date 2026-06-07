@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUser } from '@clerk/nextjs'
 import type { DanceClass } from '@/lib/types'
 import { GENRE_COLORS, DAYS, STUDIO_LOCATIONS } from '@/lib/types'
@@ -17,30 +17,47 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
   const [bookingState, setBookingState] = useState<'idle' | 'loading' | 'done'>('idle')
   const [showToast, setShowToast] = useState(false)
 
-  if (!cls) return null
+  // Track what's displayed so we can animate out before unmounting
+  const [displayed, setDisplayed] = useState<DanceClass | null>(cls)
+  const [show, setShow] = useState(false)
 
-  const color = GENRE_COLORS[cls.genre]
-  const loc = STUDIO_LOCATIONS[cls.studioName]
+  useEffect(() => {
+    if (cls) {
+      setDisplayed(cls)
+      setBookingState('idle')
+      // Double rAF ensures the translate(110%) starting state renders before we transition
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setShow(true))
+      )
+    } else {
+      setShow(false)
+      const t = setTimeout(() => setDisplayed(null), 340)
+      return () => clearTimeout(t)
+    }
+  }, [cls])
+
+  function close() {
+    setShow(false)
+    setTimeout(onClose, 340)
+  }
 
   async function handleBook() {
-    if (!cls) return
+    if (!displayed) return
+    window.open(displayed.bookingUrl, '_blank')
     if (!isSignedIn) return
-
-    // Open booking URL immediately (must be synchronous to avoid browser popup block)
-    window.open(cls.bookingUrl, '_blank')
     setBookingState('loading')
     try {
       await fetch('/api/log/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          classId: cls.id,
-          studioName: cls.studioName,
-          className: cls.className,
-          instructor: cls.instructor,
-          genre: cls.genre,
-          startTime: cls.startTime,
-          endTime: cls.endTime,
+          classId: displayed.id,
+          studioName: displayed.studioName,
+          className: displayed.className,
+          instructor: displayed.instructor,
+          genre: displayed.genre,
+          startTime: displayed.startTime,
+          endTime: displayed.endTime,
           classDate: specificDate,
         }),
       })
@@ -51,94 +68,171 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
     }
   }
 
+  if (!displayed) return showToast ? <BookingToast /> : null
+
+  const color = GENRE_COLORS[displayed.genre] ?? '#888'
+  const loc = STUDIO_LOCATIONS[displayed.studioName]
+  const dayLabel = DAYS[displayed.dayOfWeek]
+
   return (
     <>
       {showToast && <BookingToast />}
+
+      {/* Scrim */}
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        onClick={onClose}
+        onClick={close}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 48,
+          background: 'rgba(8,4,20,.6)',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          opacity: show ? 1 : 0,
+          transition: 'opacity .25s',
+          pointerEvents: show ? 'auto' : 'none',
+        }}
+      />
+
+      {/* Sheet */}
+      <div
+        style={{
+          position: 'fixed',
+          left: 0, right: 0, bottom: 0,
+          zIndex: 49,
+          borderRadius: '30px 30px 0 0',
+          background: 'var(--sheet-bg)',
+          borderTop: '1px solid var(--line)',
+          padding: '10px 22px 40px',
+          overflow: 'hidden',
+          transform: show ? 'translateY(0)' : 'translateY(110%)',
+          transition: 'transform .32s cubic-bezier(.22,1,.36,1)',
+          maxWidth: '512px',
+          margin: '0 auto',
+        }}
       >
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-        <div
-          className="relative z-10 w-full max-w-md rounded-2xl p-6 shadow-2xl"
-          style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(16px)', borderTop: `4px solid ${color}` }}
-          onClick={(e) => e.stopPropagation()}
-        >
+        {/* Hglow */}
+        <div style={{
+          position: 'absolute', top: '-40px', left: '50%', transform: 'translateX(-50%)',
+          width: '240px', height: '120px', borderRadius: '50%',
+          background: color, filter: 'blur(50px)', opacity: .5, pointerEvents: 'none',
+        }} />
+
+        {/* Grab handle */}
+        <div style={{
+          width: '44px', height: '5px', borderRadius: '99px',
+          background: 'rgba(53,43,61,.2)', margin: '4px auto 14px',
+        }} />
+
+        {/* Header row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}>
+          <span style={{
+            display: 'inline-flex', fontWeight: 800, fontSize: '10px',
+            letterSpacing: '.5px', textTransform: 'uppercase',
+            padding: '4px 9px', borderRadius: '999px',
+            background: color + '22', color, border: `1px solid ${color}55`,
+          }}>
+            {displayed.genre}
+          </span>
           <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl leading-none"
+            onClick={close}
+            style={{
+              border: 'none', width: '32px', height: '32px', borderRadius: '50%',
+              background: 'var(--panel2)', color: 'var(--ink)', fontSize: '16px',
+              cursor: 'pointer',
+            }}
           >
             ✕
           </button>
-
-          <span
-            className="inline-block text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3"
-            style={{ backgroundColor: color + '33', color }}
-          >
-            {cls.genre}
-          </span>
-
-          <h2 className="text-xl font-bold text-gray-800 mb-1">{cls.className}</h2>
-          <p className="text-gray-500 mb-4">with {cls.instructor}</p>
-
-          <div className="space-y-2 text-sm mb-6">
-            <Row label="Studio" value={cls.studioName} />
-            <Row label="Day" value={DAYS[cls.dayOfWeek]} />
-            <Row label="Time" value={`${cls.startTime} – ${cls.endTime}`} />
-            <Row label="Level" value={cls.level} />
-            {loc && (
-              <div className="flex gap-2">
-                <span className="text-gray-400 w-20 shrink-0">Location</span>
-                <a
-                  href={loc.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-gray-900 underline underline-offset-2"
-                >
-                  📍 {loc.label}
-                </a>
-              </div>
-            )}
-            {cls.price && <Row label="Price" value={cls.price} />}
-            {cls.notes && <Row label="Notes" value={cls.notes} />}
-          </div>
-
-          {isSignedIn ? (
-            <button
-              onClick={handleBook}
-              disabled={bookingState === 'loading'}
-              className="block w-full text-center py-3 rounded-xl font-bold text-white text-sm transition-opacity hover:opacity-90 disabled:opacity-60"
-              style={{ backgroundColor: color }}
-            >
-              {bookingState === 'loading' ? 'Saving…' : 'Book Now →'}
-            </button>
-          ) : (
-            <div>
-              <a
-                href={cls.bookingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-center py-3 rounded-xl font-bold text-white text-sm transition-opacity hover:opacity-90 mb-2"
-                style={{ backgroundColor: color }}
-              >
-                Book Now →
-              </a>
-              <p className="text-center text-xs text-gray-400">
-                <a href="/sign-in" className="underline hover:text-gray-600">Sign in</a> to save your progress
-              </p>
-            </div>
-          )}
         </div>
+
+        {/* Title */}
+        <h1 style={{
+          fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500,
+          fontSize: '23px', lineHeight: 1.15, marginTop: '10px',
+          color: 'var(--ink)', position: 'relative',
+        }}>
+          {displayed.className}
+        </h1>
+        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '14px', marginTop: '4px', position: 'relative' }}>
+          with {displayed.instructor}
+        </p>
+
+        {/* Detail cells 2×2 */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px',
+          margin: '18px 0 6px', position: 'relative',
+        }}>
+          <Cell k="Studio"   v={displayed.studioName} />
+          <Cell k="When"     v={`${dayLabel} · ${displayed.startTime}–${displayed.endTime}`} />
+          <Cell k="Location" v={loc ? loc.label : (displayed.location ?? '—')} />
+          <Cell k="Level"    v={displayed.level} />
+        </div>
+
+        {/* Price row */}
+        {displayed.price && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            margin: '14px 0 4px', position: 'relative',
+          }}>
+            <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '13px' }}>Price per class</span>
+            <span style={{
+              fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600,
+              fontSize: '26px', color,
+            }}>
+              {displayed.price}
+            </span>
+          </div>
+        )}
+
+        {/* Book Now button */}
+        <button
+          onClick={handleBook}
+          disabled={bookingState === 'loading'}
+          style={{
+            width: '100%', border: 'none', color: '#fff',
+            fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '16px',
+            padding: '16px', borderRadius: '16px', marginTop: '8px', cursor: 'pointer',
+            background: `linear-gradient(120deg, ${color}, var(--accent))`,
+            boxShadow: `0 0 28px ${color}88`,
+            opacity: bookingState === 'loading' ? 0.6 : 1,
+            transition: 'opacity .15s',
+          }}
+        >
+          {bookingState === 'loading' ? 'Saving…' : 'Book Now →'}
+        </button>
+
+        {/* Sign-in hint */}
+        {!isSignedIn && (
+          <p style={{
+            textAlign: 'center', color: 'var(--muted)',
+            fontWeight: 700, fontSize: '12.5px', marginTop: '12px',
+          }}>
+            <a href="/sign-in" style={{ color: 'var(--ink)', fontWeight: 800 }}>Sign in</a>
+            {' '}to save your progress
+          </p>
+        )}
+
+        {displayed.notes && (
+          <p style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '12px', fontStyle: 'italic', position: 'relative' }}>
+            {displayed.notes}
+          </p>
+        )}
       </div>
     </>
   )
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Cell({ k, v }: { k: string; v: string }) {
   return (
-    <div className="flex gap-2">
-      <span className="text-gray-400 w-20 shrink-0">{label}</span>
-      <span className="text-gray-700">{value}</span>
+    <div style={{
+      background: 'var(--panel)', border: '1px solid var(--line)',
+      borderRadius: '16px', padding: '12px 13px',
+    }}>
+      <div style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '.5px' }}>
+        {k}
+      </div>
+      <div style={{ fontWeight: 800, fontSize: '14px', marginTop: '4px', color: 'var(--ink)' }}>
+        {v}
+      </div>
     </div>
   )
 }

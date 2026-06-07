@@ -6,13 +6,38 @@ interface Props {
 
 export function StatsCard({ label, value, sub }: Props) {
   return (
-    <div
-      className="rounded-2xl p-5 flex flex-col gap-1"
-      style={{ backgroundColor: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(8px)', border: '1.5px solid rgba(255,255,255,0.7)' }}
-    >
-      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{label}</p>
-      <p className="text-3xl font-extrabold text-gray-800">{value}</p>
-      {sub && <p className="text-xs text-gray-400">{sub}</p>}
+    <div style={{
+      background: 'var(--panel)',
+      border: '1px solid var(--line)',
+      borderRadius: '18px',
+      padding: '14px 15px',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      <p style={{
+        color: 'var(--muted)',
+        fontWeight: 800,
+        fontSize: '10.5px',
+        textTransform: 'uppercase',
+        letterSpacing: '.5px',
+      }}>
+        {label}
+      </p>
+      <p style={{
+        fontFamily: 'var(--font-unbounded, sans-serif)',
+        fontWeight: 600,
+        fontSize: '30px',
+        marginTop: '6px',
+        color: 'var(--ink)',
+        lineHeight: 1,
+      }}>
+        {value}
+      </p>
+      {sub && (
+        <p style={{ color: 'var(--muted)', fontSize: '11px', marginTop: '4px', fontWeight: 700 }}>
+          {sub}
+        </p>
+      )}
     </div>
   )
 }

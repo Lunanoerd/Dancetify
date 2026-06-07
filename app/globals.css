@@ -1,20 +1,41 @@
 @import "tailwindcss";
 
+/* ── Sunrise design tokens ────────────────────────────────────────────────── */
 :root {
-  --foreground: #1a1a1a;
+  --ink:        #352B3D;
+  --muted:      #8A7D92;
+  --line:       rgba(90,60,90,.14);
+  --panel:      rgba(255,255,255,.46);
+  --panel2:     rgba(255,255,255,.74);
+  --chip-on:    #473B50;
+  --accent:     #ED4889;
+  --sheet-bg:   linear-gradient(180deg,#FFF6EC,#FBE6D4);
+  --tabbar-bg:  rgba(255,255,255,.72);
+  --font-display: var(--font-unbounded, 'Unbounded', sans-serif);
 }
 
 @theme inline {
-  --color-foreground: var(--foreground);
+  --color-foreground: var(--ink);
   --font-sans: var(--font-nunito);
+  --font-display: var(--font-unbounded);
 }
 
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #FFF4A3 0%, #FFCBA4 30%, #FFB3C6 65%, #D4A8E8 100%);
+  background: linear-gradient(135deg, #FCEFB4 0%, #FBD3A6 36%, #F8B7C4 68%, #F3ABD2 100%);
   background-attachment: fixed;
-  color: var(--foreground);
+  color: var(--ink);
   font-family: var(--font-nunito), 'Nunito', Arial, sans-serif;
+}
+
+/* hide scrollbars on horizontal scroll rows */
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* bottom sheet slide-up animation */
+@keyframes sheet-in {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
 }
 
 select option {

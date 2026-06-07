@@ -34,6 +34,26 @@ model User {
   createdAt     DateTime      @default(now())
   bookedClasses BookedClass[]
   manualClasses ManualClass[]
+  savedClasses  SavedClass[]
+}
+
+model SavedClass {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  classId    String
+  studioName String
+  className  String
+  instructor String
+  genre      String
+  startTime  String
+  endTime    String
+  dayOfWeek  Int
+  level      String
+  bookingUrl String
+  savedAt    DateTime @default(now())
+
+  @@unique([userId, classId])
 }
 
 model BookedClass {
