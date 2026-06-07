@@ -94,7 +94,7 @@ function AvatarButton() {
           padding: '7px 16px',
           fontFamily: 'inherit',
           fontWeight: 800,
-          fontSize: '13px',
+          fontSize: '12px',
           color: 'var(--ink)',
           cursor: 'pointer',
         }}>
@@ -122,7 +122,7 @@ function Chip({
         color: active ? '#fff' : 'var(--muted)',
         fontFamily: 'inherit',
         fontWeight: 800,
-        fontSize: '12.5px',
+        fontSize: '11.5px',
         padding: '7px 13px',
         borderRadius: '999px',
         whiteSpace: 'nowrap',
@@ -141,7 +141,7 @@ function Chip({
       )}
       {label}
       {hint && (
-        <small style={{ opacity: 0.62, fontWeight: 700, fontSize: '11px' }}>{hint}</small>
+        <small style={{ opacity: 0.62, fontWeight: 700, fontSize: '10px' }}>{hint}</small>
       )}
     </button>
   )
@@ -167,10 +167,10 @@ function TimelineRow({
       <div style={{
         flexShrink: 0, width: '46px', textAlign: 'right', paddingTop: '14px',
       }}>
-        <div style={{ fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '13px', color: 'var(--ink)' }}>
+        <div style={{ fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '12px', color: 'var(--ink)' }}>
           {cls.startTime}
         </div>
-        <div style={{ fontWeight: 800, fontSize: '11px', color: 'var(--muted)', marginTop: '1px' }}>
+        <div style={{ fontWeight: 800, fontSize: '10px', color: 'var(--muted)', marginTop: '1px' }}>
           {dur(cls.startTime, cls.endTime)}
         </div>
       </div>
@@ -253,21 +253,21 @@ function TimelineRow({
         {/* Title */}
         <div style={{
           fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500,
-          fontSize: '15px', lineHeight: 1.2, marginTop: '8px',
+          fontSize: '13.5px', lineHeight: 1.2, marginTop: '8px',
           paddingRight: '42px', position: 'relative', color: 'var(--ink)',
         }}>
           {cls.className}
         </div>
 
         {/* Teacher */}
-        <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', marginTop: '4px', position: 'relative' }}>
+        <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px', marginTop: '4px', position: 'relative' }}>
           {cls.instructor}
         </div>
 
         {/* Footer */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '6px',
-          marginTop: '9px', fontWeight: 800, fontSize: '11.5px', position: 'relative',
+          marginTop: '9px', fontWeight: 800, fontSize: '10.5px', position: 'relative',
         }}>
           <span style={{ color }}>📍 {cls.studioName}</span>
           {loc && (
@@ -409,7 +409,7 @@ export default function Home() {
                     color: active ? '#fff' : 'var(--muted)',
                     fontFamily: 'var(--font-unbounded, sans-serif)',
                     fontWeight: 500,
-                    fontSize: '12px',
+                    fontSize: '11px',
                     padding: '9px 14px',
                     borderRadius: '14px',
                     display: 'flex',
@@ -460,7 +460,7 @@ export default function Home() {
                   color: filterDim === dim ? '#fff' : 'var(--muted)',
                   fontFamily: 'inherit',
                   fontWeight: 800,
-                  fontSize: '12px',
+                  fontSize: '11px',
                   padding: '6px 16px',
                   borderRadius: '999px',
                   cursor: 'pointer',
@@ -507,11 +507,11 @@ export default function Home() {
         }}>
           <h2 style={{
             fontFamily: 'var(--font-unbounded, sans-serif)',
-            fontWeight: 500, fontSize: '17px', color: 'var(--ink)',
+            fontWeight: 500, fontSize: '15px', color: 'var(--ink)',
           }}>
             {dayInfo ? `${dayInfo.label} ${dayInfo.dateLabel}` : 'Classes'}
           </h2>
-          <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '12.5px' }}>
+          <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '11.5px' }}>
             {loading ? '…' : `${displayed.length} classes`}
           </span>
         </div>
@@ -626,23 +626,23 @@ function SigninSheet({ onClose }: { onClose: () => void }) {
             onClick={close}
             style={{
               border: 'none', width: '32px', height: '32px', borderRadius: '50%',
-              background: 'var(--panel2)', color: 'var(--ink)', fontSize: '16px', cursor: 'pointer',
+              background: 'var(--panel2)', color: 'var(--ink)', fontSize: '14px', cursor: 'pointer',
             }}
           >✕</button>
         </div>
         <h1 style={{
-          fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '23px',
+          fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '20px',
           lineHeight: 1.15, marginTop: '10px', color: 'var(--ink)', position: 'relative',
         }}>
           Sign in to save
         </h1>
-        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '14px', marginTop: '4px', position: 'relative' }}>
+        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', marginTop: '4px', position: 'relative' }}>
           Save classes to your favourites and keep track of every class you take.
         </p>
         <SignInButton mode="redirect">
           <button style={{
             width: '100%', border: 'none', color: '#fff',
-            fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '16px',
+            fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '14px',
             padding: '16px', borderRadius: '16px', marginTop: '20px', cursor: 'pointer',
             background: `linear-gradient(120deg, var(--accent), #9B6DFF)`,
             boxShadow: '0 0 28px rgba(237,72,137,.5)',
@@ -650,7 +650,7 @@ function SigninSheet({ onClose }: { onClose: () => void }) {
             Sign in to save →
           </button>
         </SignInButton>
-        <p style={{ textAlign: 'center', color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', marginTop: '12px' }}>
+        <p style={{ textAlign: 'center', color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px', marginTop: '12px' }}>
           New to Dancetify?{' '}
           <a href="/sign-up" style={{ color: 'var(--ink)', fontWeight: 800 }}>Create an account</a>
         </p>

@@ -136,7 +136,7 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
             onClick={close}
             style={{
               border: 'none', width: '32px', height: '32px', borderRadius: '50%',
-              background: 'var(--panel2)', color: 'var(--ink)', fontSize: '16px',
+              background: 'var(--panel2)', color: 'var(--ink)', fontSize: '14px',
               cursor: 'pointer',
             }}
           >
@@ -147,12 +147,12 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
         {/* Title */}
         <h1 style={{
           fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500,
-          fontSize: '23px', lineHeight: 1.15, marginTop: '10px',
+          fontSize: '20px', lineHeight: 1.15, marginTop: '10px',
           color: 'var(--ink)', position: 'relative',
         }}>
           {displayed.className}
         </h1>
-        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '14px', marginTop: '4px', position: 'relative' }}>
+        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', marginTop: '4px', position: 'relative' }}>
           with {displayed.instructor}
         </p>
 
@@ -173,10 +173,10 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             margin: '14px 0 4px', position: 'relative',
           }}>
-            <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '13px' }}>Price per class</span>
+            <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '12px' }}>Price per class</span>
             <span style={{
               fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600,
-              fontSize: '26px', color,
+              fontSize: '22px', color,
             }}>
               {displayed.price}
             </span>
@@ -189,7 +189,7 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
           disabled={bookingState === 'loading'}
           style={{
             width: '100%', border: 'none', color: '#fff',
-            fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '16px',
+            fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '14px',
             padding: '16px', borderRadius: '16px', marginTop: '8px', cursor: 'pointer',
             background: `linear-gradient(120deg, ${color}, var(--accent))`,
             boxShadow: `0 0 28px ${color}88`,
@@ -204,7 +204,7 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
         {!isSignedIn && (
           <p style={{
             textAlign: 'center', color: 'var(--muted)',
-            fontWeight: 700, fontSize: '12.5px', marginTop: '12px',
+            fontWeight: 700, fontSize: '11.5px', marginTop: '12px',
           }}>
             <a href="/sign-in" style={{ color: 'var(--ink)', fontWeight: 800 }}>Sign in</a>
             {' '}to save your progress
@@ -212,7 +212,7 @@ export function ClassModal({ cls, specificDate, onClose }: Props) {
         )}
 
         {displayed.notes && (
-          <p style={{ color: 'var(--muted)', fontSize: '12px', marginTop: '12px', fontStyle: 'italic', position: 'relative' }}>
+          <p style={{ color: 'var(--muted)', fontSize: '11px', marginTop: '12px', fontStyle: 'italic', position: 'relative' }}>
             {displayed.notes}
           </p>
         )}
@@ -230,7 +230,7 @@ function Cell({ k, v }: { k: string; v: string }) {
       <div style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '.5px' }}>
         {k}
       </div>
-      <div style={{ fontWeight: 800, fontSize: '14px', marginTop: '4px', color: 'var(--ink)' }}>
+      <div style={{ fontWeight: 800, fontSize: '12.5px', marginTop: '4px', color: 'var(--ink)' }}>
         {v}
       </div>
     </div>

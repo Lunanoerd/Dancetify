@@ -101,11 +101,11 @@ export default async function DashboardPage() {
       <div style={{ marginBottom: '20px' }}>
         <h1 style={{
           fontFamily: 'var(--font-unbounded, sans-serif)',
-          fontWeight: 600, fontSize: '23px', color: 'var(--ink)',
+          fontWeight: 600, fontSize: '20px', color: 'var(--ink)',
         }}>
           My Progress
         </h1>
-        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '13px', marginTop: '2px' }}>
+        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12px', marginTop: '2px' }}>
           every move on the floor, tracked
         </p>
       </div>
@@ -125,12 +125,12 @@ export default async function DashboardPage() {
         background: 'linear-gradient(120deg, var(--accent), #9B6DFF)',
         boxShadow: '0 0 34px rgba(237,72,137,.28)',
       }}>
-        <p style={{ fontWeight: 800, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '.6px', opacity: .95 }}>
+        <p style={{ fontWeight: 800, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '.6px', opacity: .95 }}>
           ✦ Dancetify Wrapped
         </p>
         <p style={{
           fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500,
-          fontSize: '17px', margin: '5px 0 12px',
+          fontSize: '15px', margin: '5px 0 12px',
         }}>
           {totalHours >= wrappedGoal
             ? 'You\'ve unlocked Wrapped!'
@@ -139,7 +139,7 @@ export default async function DashboardPage() {
         <div style={{ height: '11px', borderRadius: '99px', background: 'rgba(0,0,0,.25)', overflow: 'hidden' }}>
           <div style={{ display: 'block', height: '100%', background: '#fff', borderRadius: '99px', width: `${wrappedPct}%`, boxShadow: '0 0 12px #fff' }} />
         </div>
-        <p style={{ fontWeight: 800, fontSize: '12px', marginTop: '8px' }}>
+        <p style={{ fontWeight: 800, fontSize: '11px', marginTop: '8px' }}>
           {totalHours}h of {wrappedGoal}h · {wrappedPct}% there
         </p>
       </div>
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
       {/* Favourite instructor */}
       {topInstructor !== '—' && (
         <div style={{ ...panel, marginBottom: '12px' }}>
-          <h3 style={{ fontWeight: 800, fontSize: '11px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
+          <h3 style={{ fontWeight: 800, fontSize: '10px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
             Favourite instructor
           </h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '13px' }}>
@@ -156,15 +156,15 @@ export default async function DashboardPage() {
               background: 'linear-gradient(135deg, var(--accent), #ED8636)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#fff',
-              fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '18px',
+              fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '16px',
             }}>
               {topInstructor.split(' ').map((w: string) => w[0]).join('').slice(0, 2)}
             </div>
             <div>
-              <div style={{ fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '17px', color: 'var(--ink)' }}>
+              <div style={{ fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500, fontSize: '15px', color: 'var(--ink)' }}>
                 {topInstructor}
               </div>
-              <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px' }}>
+              <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px' }}>
                 {instructorCounts[topInstructor]} class{instructorCounts[topInstructor] !== 1 ? 'es' : ''} attended
               </div>
             </div>
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
       {/* Pending bookings */}
       {pending.length > 0 && (
         <div style={{ ...panel, marginTop: '12px' }}>
-          <h3 style={{ fontWeight: 800, fontSize: '11px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
+          <h3 style={{ fontWeight: 800, fontSize: '10px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
             Booked — awaiting confirmation
           </h3>
           {pending.map(c => (
@@ -196,8 +196,8 @@ export default async function DashboardPage() {
               }}
             >
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--ink)' }}>{c.className}</div>
-                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px', marginTop: '1px' }}>
+                <div style={{ fontWeight: 800, fontSize: '12px', color: 'var(--ink)' }}>{c.className}</div>
+                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '10.5px', marginTop: '1px' }}>
                   {c.studioName} · {c.instructor}
                 </div>
               </div>
@@ -215,11 +215,11 @@ export default async function DashboardPage() {
 
       {/* Class log */}
       <div style={{ ...panel, marginTop: '12px' }}>
-        <h3 style={{ fontWeight: 800, fontSize: '11px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
+        <h3 style={{ fontWeight: 800, fontSize: '10px', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.6px', marginBottom: '12px' }}>
           Class log
         </h3>
         {allClasses.length === 0 ? (
-          <p style={{ fontSize: '13px', color: 'var(--muted)', fontWeight: 700 }}>
+          <p style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 700 }}>
             No classes logged yet. Book a class or add one manually.
           </p>
         ) : (
@@ -232,15 +232,15 @@ export default async function DashboardPage() {
               }}
             >
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, fontSize: '13.5px', color: 'var(--ink)' }}>
+                <div style={{ fontWeight: 800, fontSize: '12px', color: 'var(--ink)' }}>
                   {c.className || c.studio}
                 </div>
-                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px', marginTop: '1px' }}>
+                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '10.5px', marginTop: '1px' }}>
                   {c.className ? `${c.studio} · ${c.instructor}` : c.instructor}
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '11.5px' }}>
+                <span style={{ color: 'var(--muted)', fontWeight: 800, fontSize: '10.5px' }}>
                   {c.date.slice(5).replace('-', '/')}
                 </span>
                 {c.isManual && (

@@ -104,17 +104,17 @@ export default function SavedPage() {
           </div>
           <h1 style={{
             fontFamily: 'var(--font-unbounded, sans-serif)',
-            fontWeight: 500, fontSize: '22px', color: 'var(--ink)', marginBottom: '8px',
+            fontWeight: 500, fontSize: '19px', color: 'var(--ink)', marginBottom: '8px',
           }}>
             Save your favourites
           </h1>
-          <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '14px', lineHeight: 1.5, marginBottom: '24px' }}>
+          <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', lineHeight: 1.5, marginBottom: '24px' }}>
             Sign in to save classes and build your personal shortlist.
           </p>
           <SignInButton mode="redirect">
             <button style={{
               width: '100%', border: 'none', color: '#fff',
-              fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '15px',
+              fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 600, fontSize: '13.5px',
               padding: '15px', borderRadius: '16px', cursor: 'pointer',
               background: 'linear-gradient(120deg, var(--accent), #9B6DFF)',
               boxShadow: '0 0 28px rgba(237,72,137,.4)',
@@ -148,11 +148,11 @@ export default function SavedPage() {
       <div style={{ marginBottom: '20px' }}>
         <h1 style={{
           fontFamily: 'var(--font-unbounded, sans-serif)',
-          fontWeight: 600, fontSize: '23px', color: 'var(--ink)',
+          fontWeight: 600, fontSize: '20px', color: 'var(--ink)',
         }}>
           Saved
         </h1>
-        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '13px', marginTop: '2px' }}>
+        <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12px', marginTop: '2px' }}>
           {saved.length === 0 ? 'your shortlist is empty' : `${saved.length} class${saved.length !== 1 ? 'es' : ''} saved`}
         </p>
       </div>
@@ -166,10 +166,10 @@ export default function SavedPage() {
             width="40" height="40" style={{ margin: '0 auto 12px', display: 'block' }}>
             <path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z" />
           </svg>
-          <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '14px' }}>
+          <p style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px' }}>
             No saved classes yet
           </p>
-          <p style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '12.5px', marginTop: '4px' }}>
+          <p style={{ color: 'var(--muted)', fontWeight: 600, fontSize: '11.5px', marginTop: '4px' }}>
             Tap the ♡ on any class to save it here
           </p>
         </div>
@@ -242,21 +242,21 @@ export default function SavedPage() {
                 {/* Title */}
                 <div style={{
                   fontFamily: 'var(--font-unbounded, sans-serif)', fontWeight: 500,
-                  fontSize: '15px', lineHeight: 1.2, marginTop: '8px',
+                  fontSize: '13.5px', lineHeight: 1.2, marginTop: '8px',
                   paddingRight: '42px', color: 'var(--ink)', position: 'relative',
                 }}>
                   {s.className}
                 </div>
 
                 {/* Teacher */}
-                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '12.5px', marginTop: '4px', position: 'relative' }}>
+                <div style={{ color: 'var(--muted)', fontWeight: 700, fontSize: '11.5px', marginTop: '4px', position: 'relative' }}>
                   {s.instructor}
                 </div>
 
                 {/* Footer */}
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '6px',
-                  marginTop: '9px', fontWeight: 800, fontSize: '11.5px', position: 'relative',
+                  marginTop: '9px', fontWeight: 800, fontSize: '10.5px', position: 'relative',
                 }}>
                   <span style={{ color }}>📍 {s.studioName}</span>
                   {loc && <span style={{ color: 'var(--muted)', fontWeight: 700 }}>· {loc.label}</span>}

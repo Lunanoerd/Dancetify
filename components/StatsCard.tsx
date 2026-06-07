@@ -26,7 +26,7 @@ export function StatsCard({ label, value, sub }: Props) {
       <p style={{
         fontFamily: 'var(--font-unbounded, sans-serif)',
         fontWeight: 600,
-        fontSize: '30px',
+        fontSize: '26px',
         marginTop: '6px',
         color: 'var(--ink)',
         lineHeight: 1,
@@ -34,7 +34,7 @@ export function StatsCard({ label, value, sub }: Props) {
         {value}
       </p>
       {sub && (
-        <p style={{ color: 'var(--muted)', fontSize: '11px', marginTop: '4px', fontWeight: 700 }}>
+        <p style={{ color: 'var(--muted)', fontSize: '10px', marginTop: '4px', fontWeight: 700 }}>
           {sub}
         </p>
       )}
